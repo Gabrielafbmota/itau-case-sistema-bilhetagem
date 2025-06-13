@@ -1,0 +1,12 @@
+REQUISITOS FUNCIONAIS - SISTEMA DE BILHETAGEM
+
+1. Cadastro e consulta de eventos disponíveis com ingressos.
+2. Solicitação de ingresso por parte do usuário.
+3. Reserva temporária de ingressos, com expiração automática.
+4. Compra de ingressos com confirmação de pagamento.
+5. Adição de produtos adicionais (pipoca, chocolate, refrigerante, etc.).
+6. Checkout unificado para ingresso e produtos.
+7. Envio de notificações (e-mail ou SMS) sobre reservas e compras.
+8. Visualização do histórico de compras.
+9. Controle de estoque de produtos adicionais.
+10. Registro de logs e rastreamento de erros (observabilidade).
