@@ -18,3 +18,9 @@ class UserRepository(IUserRepository):
         self.db.commit()
         self.db.refresh(user)
         return user
+
+    def get_user_by_email(self, email: str) -> UserModel:
+        return self.db.query(UserModel).filter(UserModel.email == email).first()
+
+    def get_user_by_id(self, user_id: int) -> UserModel:
+        return self.db.query(UserModel).filter(UserModel.user_id == user_id).first()

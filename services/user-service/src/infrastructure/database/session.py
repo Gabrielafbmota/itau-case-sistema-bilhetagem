@@ -7,12 +7,15 @@ Base = declarative_base()
 
 
 class DatabaseSession:
+
+    def __init__(self) -> None:
+        self.db_url, self.engine, self.SessionLocal = self.make_session()
+
     def make_session(self, *args, **kwargs):
-        self.db_url = get_env_var("DATABASE_URL")
-        self.engine = create_engine(self.db_url, echo=True)
-        self.SessionLocal = sessionmaker(
-            autocommit=False, autoflush=False, bind=self.engine
-        )
+        db_url = get_env_var("DATABASE_URL")
+        engine = create_engine(db_url, echo=True)
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        return db_url, engine, SessionLocal
 
     def get_session(self):
         db = self.SessionLocal()

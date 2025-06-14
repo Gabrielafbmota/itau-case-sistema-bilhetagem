@@ -7,12 +7,12 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
 
-
 class UserResponse(BaseModel):
-    id: int
+    user_id: int
     name: str
-    email: EmailStr
+    email: str
     created_at: datetime
+    updated_at: datetime | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

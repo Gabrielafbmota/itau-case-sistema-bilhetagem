@@ -6,6 +6,7 @@ python-dotenv
 passlib[bcrypt]
 pyjwt
 pydantic
+pydantic[email]
 alembic
 pytest
 pytest-env
