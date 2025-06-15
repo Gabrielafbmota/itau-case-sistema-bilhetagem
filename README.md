@@ -1,38 +1,30 @@
 
-# Product & User Services
+# Microsserviços - Sistema de Bilhetagem
 
-Este repositório contém dois microsserviços construídos com **FastAPI** seguindo os princípios da **Clean Architecture**:
+Este repositório contém 5 microsserviços independentes desenvolvidos com **FastAPI**, organizados segundo os princípios da **Clean Architecture**.
 
-- `user-service`: Gerenciamento de usuários e autenticação JWT.
-- `product-service`: CRUD de produtos com controle de acesso baseado em roles (usuário comum e admin).
+## 📦 Serviços incluídos
 
----
-
-## 🧱 Estrutura
-
-Cada serviço segue o padrão:
-
-```
-src/
-├── application/         # Use Cases e Services
-├── domain/              # Entities, Schemas e Interfaces
-├── infrastructure/      # Banco de dados e Repositórios
-├── presentation/        # Rotas
-├── core/                # Segurança, Config, Logger
-```
+| Serviço          | Porta | Responsabilidade principal              |
+|------------------|-------|------------------------------------------|
+| `user-service`   | 8000  | Gerenciamento de usuários e login (JWT)  |
+| `event-service`  | 8001  | Cadastro e gerenciamento de eventos      |
+| `product-service`| 8002  | Produtos adicionais dos eventos          |
+| `ticket-service` | 8003  | Geração e controle de ingressos (PDF)    |
+| `order-service`  | 8004  | Checkout e pedidos de compra             |
 
 ---
 
 ## 🚀 Como executar
 
-### 1. Ative seu ambiente virtual Python
+### 1. Ative o ambiente virtual
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2. Execute os serviços com o script
+### 2. Execute todos os serviços com o script
 
 ```bash
 chmod +x start_services.sh
@@ -43,47 +35,45 @@ chmod +x start_services.sh
 
 ## 🔐 Autenticação
 
-- Autenticação baseada em JWT.
-- Acesse `/token` com `username` e `password` para obter um token.
-- Use o token como `Bearer` nos headers das requisições.
+- O `user-service` fornece autenticação via **JWT**.
+- Os demais serviços dependem do `Authorization: Bearer <token>` no header.
+- A rota `/users/me` retorna os dados do usuário autenticado.
 
 ---
 
-## 🛠️ Requisitos
+## 🧱 Estrutura por serviço
+
+Todos os serviços seguem a arquitetura:
+
+```
+src/
+├── application/         # Use Cases e Services
+├── domain/              # Entidades, Schemas e Interfaces
+├── infrastructure/      # Repositórios e banco
+├── presentation/        # Rotas (routers)
+├── core/                # Configurações, segurança, logger
+```
+
+---
+
+## 🛠️ Tecnologias
 
 - Python 3.10+
-- FastAPI
-- Uvicorn
+- FastAPI + Uvicorn
 - SQLAlchemy
-- passlib[bcrypt]
+- JWT com OAuth2
+- Pydantic
 - requests
-
----
-
-## 📮 Endpoints principais
-
-### `user-service`
-
-| Método | Rota        | Descrição               |
-|--------|-------------|--------------------------|
-| POST   | /users      | Criação de usuário       |
-| POST   | /token      | Login (JWT)              |
-| GET    | /users/me   | Usuário autenticado      |
-
-### `product-service`
-
-| Método | Rota              | Descrição               |
-|--------|-------------------|--------------------------|
-| GET    | /products         | Lista todos os produtos |
-| POST   | /products         | Cria produto (admin)     |
-| PUT    | /products/{id}    | Atualiza produto (admin) |
-| DELETE | /products/{id}   | Remove produto (admin)   |
+- passlib[bcrypt]
 
 ---
 
 ## 📌 Observações
 
-- O `product-service` depende do `user-service` para validação de token.
-- Ambos os serviços devem rodar em `localhost`, portas padrão: **8000** (`user-service`) e **8001** (`product-service`).
+- O `user-service` deve ser o primeiro a subir (controla autenticação).
+- Os serviços são independentes e expostos por porta distinta.
+- Para ambientes reais, recomenda-se o uso de **Docker** + **Traefik** ou **NGINX**.
 
+---
 
+Desenvolvido com 💙 por Gabi
