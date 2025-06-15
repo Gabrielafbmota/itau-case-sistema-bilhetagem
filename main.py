@@ -9,9 +9,10 @@ app = FastAPI(
     description="Serviço de gerenciamento de usuários para o sistema de bilhetagem.",
 )
 
+# Middleware de CORS (opcional, mas recomendado)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # ajuste conforme necessário para produção
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,0 +1,11 @@
+from typing import Optional
+from src.domain.entities.event_entity import Event
+from src.domain.interfaces.event_repository_interface import EventRepositoryInterface
+
+
+class GetEventUseCase:
+    def __init__(self, repository: EventRepositoryInterface):
+        self.repository = repository
+
+    def execute(self, event_id: int) -> Optional[Event]:
+        return self.repository.get_by_id(event_id)

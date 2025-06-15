@@ -1,46 +1,89 @@
-# itau-case-sistema-bilhetagem
 
-Desafio Técnico – Vaga de Engenheiro(a) de Software
+# Product & User Services
 
-🎯 O Desafio
+Este repositório contém dois microsserviços construídos com **FastAPI** seguindo os princípios da **Clean Architecture**:
 
-Você deverá propor uma arquitetura na AWS e desenvolver uma solução funcional (em sua stack de preferência) para um sistema de bilhetagem com as seguintes características:
+- `user-service`: Gerenciamento de usuários e autenticação JWT.
+- `product-service`: CRUD de produtos com controle de acesso baseado em roles (usuário comum e admin).
 
-O sistema deve permitir solicitação, reserva e compra de ingressos.
-Durante o processo de compra, o sistema deve oferecer produtos adicionais como pipoca, chocolate, refrigerante, etc.
-A solução deve conter uma única base de código (um único projeto/solution), mesmo que a arquitetura proposta seja orientada a microserviços. Isso facilitará a apresentação e a avaliação do seu trabalho.
- 
+---
 
-🛠️ O que esperamos:
+## 🧱 Estrutura
 
-Um desenho de arquitetura AWS (pode ser feito com ferramentas como Lucidchart, Draw.io, ou similar).
-Código-fonte funcional com instruções claras de como rodar o projeto. (Pode ser compartilhado um repositório GitHub pessoal, ou o envio do código por e-mail).
-Documentação breve explicando suas decisões técnicas.
- 
-# 
+Cada serviço segue o padrão:
 
-Esse repositório é referente ao case técnico do ITAU para vaga de senior. 
+```
+src/
+├── application/         # Use Cases e Services
+├── domain/              # Entities, Schemas e Interfaces
+├── infrastructure/      # Banco de dados e Repositórios
+├── presentation/        # Rotas
+├── core/                # Segurança, Config, Logger
+```
 
-Estrutura do projeto
-ticketing-system/
-├── services/
-│   ├── ticket-service/
-│   ├── reservation-service/
-│   ├── checkout-service/
-│   └── ...
-├── infra/
-│   ├── terraform/            # (infra como código, opcional)
-│   └── docker/               # Dockerfiles + compose para dev
-├── scripts/
-│   └── deploy.sh             # deploy scripts para ECS
-├── docs/
-│   ├── architecture.png
-│   ├── decisions.md
-│   └── run-instructions.md
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yml
-└── README.md
+---
 
+## 🚀 Como executar
+
+### 1. Ative seu ambiente virtual Python
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Execute os serviços com o script
+
+```bash
+chmod +x start_services.sh
+./start_services.sh
+```
+
+---
+
+## 🔐 Autenticação
+
+- Autenticação baseada em JWT.
+- Acesse `/token` com `username` e `password` para obter um token.
+- Use o token como `Bearer` nos headers das requisições.
+
+---
+
+## 🛠️ Requisitos
+
+- Python 3.10+
+- FastAPI
+- Uvicorn
+- SQLAlchemy
+- passlib[bcrypt]
+- requests
+
+---
+
+## 📮 Endpoints principais
+
+### `user-service`
+
+| Método | Rota        | Descrição               |
+|--------|-------------|--------------------------|
+| POST   | /users      | Criação de usuário       |
+| POST   | /token      | Login (JWT)              |
+| GET    | /users/me   | Usuário autenticado      |
+
+### `product-service`
+
+| Método | Rota              | Descrição               |
+|--------|-------------------|--------------------------|
+| GET    | /products         | Lista todos os produtos |
+| POST   | /products         | Cria produto (admin)     |
+| PUT    | /products/{id}    | Atualiza produto (admin) |
+| DELETE | /products/{id}   | Remove produto (admin)   |
+
+---
+
+## 📌 Observações
+
+- O `product-service` depende do `user-service` para validação de token.
+- Ambos os serviços devem rodar em `localhost`, portas padrão: **8000** (`user-service`) e **8001** (`product-service`).
 
 

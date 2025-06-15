@@ -15,13 +15,17 @@ logger = get_logger()
 
 def get_user_service(db: Session = Depends(DatabaseSession().get_session)):
     repo = UserRepository(db)
-    use_case = CreateUserUseCase(repo)
-    get_user_use_case = GetUserUseCase(repo)
-    get_user_by_id_use_case = GetUserByIdUseCase(repo)
 
-    return UserService(use_case, get_user_use_case, get_user_by_id_use_case, logger)
+    create_use_case = CreateUserUseCase(repo)
+    get_user_by_email_use_case = GetUserUseCase(repo)  # para buscar por email
+    get_user_by_id_use_case = GetUserByIdUseCase(repo)  # para buscar por ID
 
-
+    return UserService(
+        create_user_use_case=create_use_case,
+        get_user_by_email_use_case=get_user_by_email_use_case,
+        get_user_by_id_use_case=get_user_by_id_use_case,
+        logger=logger,
+    )
 @user_router.post("/", response_model=UserResponse)
 def create_user(
     user_data: UserCreate, service: UserService = Depends(get_user_service)
