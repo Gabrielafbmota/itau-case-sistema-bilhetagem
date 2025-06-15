@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from src.core.logger import logger
+from src.core.logger import get_logger
 from src.domain.schemas.order_schema import CreateOrderSchema, OrderResponseSchema
 from src.infrastructure.repositories.order_repository import OrderRepository
 from src.infrastructure.database.session import DatabaseSession
@@ -20,7 +20,7 @@ from src.domain.entities.order_entity import Order
 
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
-
+logger = get_logger(__name__)
 
 def get_service(db: Session = Depends(DatabaseSession().get_session)) -> OrderService:
     repository = OrderRepository(db)
