@@ -17,7 +17,9 @@ class EventRepository(EventRepositoryInterface):
         return Event.from_orm(event_model)
 
     def get_by_id(self, event_id: int) -> Optional[Event]:
-        event = self.db.query(EventModel).filter(EventModel.id == event_id).first()
+        event = (
+            self.db.query(EventModel).filter(EventModel.event_id == event_id).first()
+        )
         return Event.from_orm(event) if event else None
 
     def list_all(self) -> List[Event]:
@@ -26,7 +28,7 @@ class EventRepository(EventRepositoryInterface):
 
     def update(self, event_id: int, event: Event) -> Optional[Event]:
         event_model = (
-            self.db.query(EventModel).filter(EventModel.id == event_id).first()
+            self.db.query(EventModel).filter(EventModel.event_id == event_id).first()
         )
         if not event_model:
             return None
@@ -37,7 +39,9 @@ class EventRepository(EventRepositoryInterface):
         return Event.from_orm(event_model)
 
     def delete(self, event_id: int) -> None:
-        event = self.db.query(EventModel).filter(EventModel.id == event_id).first()
+        event = (
+            self.db.query(EventModel).filter(EventModel.event_id == event_id).first()
+        )
         if event:
             self.db.delete(event)
             self.db.commit()

@@ -1,7 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel
-
+from src.domain.schemas.order_schema import CreateOrderSchema
 
 class OrderItem(BaseModel):
     ticket_id: int
@@ -16,33 +16,48 @@ class OrderProduct(BaseModel):
 
 
 class Order:
+
     def __init__(
         self,
         user_id: int,
         event_id: int,
-        product_ids: Optional[List[int]] = None,
+        items: List[OrderItem],
+        products: Optional[List[OrderProduct]] = None,
         total_price: Optional[float] = None,
         created_at: Optional[datetime] = None,
         updated_at: Optional[datetime] = None,
-        id: Optional[int] = None,
+        order_id: Optional[int] = None,
     ):
-        self.id = id
+        self.order_id = order_id
         self.user_id = user_id
         self.event_id = event_id
-        self.product_ids = product_ids or []
         self.total_price = total_price
         self.created_at = created_at
         self.updated_at = updated_at
+        self.items: List[OrderItem] = items
+        self.products: List[OrderProduct] = products or []
 
         # Dados enriquecidos – NÃO persistidos no banco
         self.user_data: Optional[dict] = None
         self.event_data: Optional[dict] = None
         self.products_data: List[dict] = []
 
-    def __repr__(self):
-        return (
-            f"<Order(id={self.id}, user_id={self.user_id}, event_id={self.event_id})>"
+    @classmethod
+    def from_schema(cls, schema: CreateOrderSchema):
+        return cls(
+            user_id=schema.user_id,
+            event_id=schema.event_id,
+            items=[OrderItem(**item.dict()) for item in schema.items],
+            products=(
+                [OrderProduct(**p.dict()) for p in schema.products]
+                if schema.products
+                else []
+            ),
+            total_price=schema.total,
         )
+
+    def __repr__(self):
+        return f"<Order(id={self.order_id}, user_id={self.user_id}, event_id={self.event_id})>"
 
     @property
     def user_name(self) -> str:
@@ -66,7 +81,7 @@ class Order:
         return datetime.fromisoformat(date_str) if date_str else datetime.now()
 
     @property
-    def products(self) -> List:
+    def formatted_products(self) -> List:
         return [
             {
                 "name": p.get("name"),

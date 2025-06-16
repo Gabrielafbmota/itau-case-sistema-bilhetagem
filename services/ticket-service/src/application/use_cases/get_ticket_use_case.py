@@ -1,6 +1,6 @@
 from typing import Optional
 from src.domain.entities.ticket_entity import Ticket
-from src.domain.interfaces.ticket_repository import TicketRepositoryInterface
+from src.domain.interfaces.ticket_repository_interface import TicketRepositoryInterface
 
 
 class GetTicketUseCase:

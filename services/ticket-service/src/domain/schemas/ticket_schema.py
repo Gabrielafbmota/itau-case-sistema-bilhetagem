@@ -1,22 +1,22 @@
-# src/domain/schemas/ticket_schema.py
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 
 class UserDataSchema(BaseModel):
-    id: int
+    user_id: int
     name: str
     email: str
 
 
 class EventDataSchema(BaseModel):
-    id: int
+    event_id: int
     title: str
-    date: str  # Pode ser ajustado para datetime se necessário
+    date: datetime
 
 
 class ProductDataSchema(BaseModel):
-    id: int
+    product_id: int
     name: str
     price: float
 
@@ -30,7 +30,7 @@ class TicketFromOrderSchema(BaseModel):
 
 
 class TicketResponseSchema(BaseModel):
-    ticket_id: str
+    ticket_id: int
     order_id: int
     pdf_path: str
 
@@ -38,11 +38,27 @@ class TicketResponseSchema(BaseModel):
 class CreateTicketSchema(BaseModel):
     event_id: int
     price: float
-    quantity: int
-    category: str
+    quantity_total: int
+    quantity_available: int
+    type: str
 
 
 class UpdateTicketSchema(BaseModel):
     price: Optional[float]
-    quantity: Optional[int]
-    category: Optional[str]
+    quantity_total: Optional[int]
+    quantity_available: Optional[int]
+    type: Optional[str]
+
+
+class TicketSchema(BaseModel):
+    ticket_id: int
+    event_id: int
+    price: float
+    quantity_total: int
+    quantity_available: int
+    type: str
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True

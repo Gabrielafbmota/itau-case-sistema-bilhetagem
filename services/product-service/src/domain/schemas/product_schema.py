@@ -4,10 +4,11 @@ from typing import Optional
 
 
 class ProductResponse(BaseModel):
-    product_id: int
+    product_id: Optional[int] = None
     name: str
     description: str
     price: float
+    stock: int
 
 
 class ProductBase(BaseModel):
@@ -16,10 +17,13 @@ class ProductBase(BaseModel):
     price: float
 
 
-class ProductCreate(ProductBase):
-    pass
+class ProductCreate(BaseModel):
+    name: str
+    description: str
+    price: float
+    stock: int
 
 
 class ProductUpdate(ProductBase):
-    name: Optional[str] = None
-    price: Optional[float] = None
+    name: Optional[str] = None  # type: ignore
+    price: Optional[float] = None  # type: ignore

@@ -5,7 +5,9 @@ from datetime import timedelta
 from src.infrastructure.database.session import DatabaseSession
 from src.infrastructure.repositories.user_repository import UserRepository
 from src.application.use_cases.login_user import LoginUserUseCase
-from src.application.use_cases.get_user_by_email import GetUserByEmailUseCase
+from src.application.use_cases.get_user_by_email import (
+    GetUserUseCase as GetUserByEmailUseCase,
+)
 from src.application.services.user_service import UserService
 from src.domain.schemas.user_schema import Token, User
 from src.core.security import create_access_token, decode_access_token
@@ -50,6 +52,8 @@ def read_users_me(
     service: UserService = Depends(get_user_service),
 ):
     payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido")
     email: str = payload.get("sub")
     if email is None:
         raise HTTPException(status_code=401, detail="Token inválido")

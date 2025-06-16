@@ -1,13 +1,17 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Optional
-
+from pydantic import BaseModel
 
 class Ticket(BaseModel):
-    id: Optional[int]
+    ticket_id: Optional[int] = None
     event_id: int
+    type: Optional[str]
     price: float
-    quantity: int
-    category: str
+    quantity_total: int
+    quantity_available: int
+
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    class Config:
+        orm_mode = True
+        from_attributes = True

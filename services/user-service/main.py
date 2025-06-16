@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.adapters.routers.user_router import user_router
+from src.adapters.routers.login_router import auth_router
 from src.core.config import get_env_var
 
 app = FastAPI(
@@ -19,6 +20,7 @@ app.add_middleware(
 
 # Inclui as rotas da API
 app.include_router(user_router, tags=["Users"])
+app.include_router(auth_router, tags=["Auth"])
 
 
 @app.get("/")
