@@ -84,6 +84,7 @@ class Order:
     def formatted_products(self) -> List:
         return [
             {
+                "product_id": p.get("product_id") or p.get("id"),
                 "name": p.get("name"),
                 "quantity": p.get("quantity"),
                 "price": p.get("price"),

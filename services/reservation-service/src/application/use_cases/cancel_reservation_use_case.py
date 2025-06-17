@@ -1,9 +1,9 @@
 from src.domain.interfaces.reservation_repository_interface import IReservationRepository
 
 
-class ConfirmReservationUseCase:
+class CancelReservationUseCase:
     def __init__(self, repository: IReservationRepository):
         self.repository = repository
 
     def execute(self, reservation_id: int):
-        return self.repository.confirm(reservation_id)
+        return self.repository.cancel(reservation_id)

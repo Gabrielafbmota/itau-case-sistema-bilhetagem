@@ -1,26 +1,13 @@
 #!/bin/bash
-set -e
 
-echo "🔧 Iniciando os serviços..."
 
-BASE_DIR=$(dirname "$0")
+echo "🚀 Iniciando todos os serviços com python main.py..."
 
-# USER SERVICE
-echo "📦 Instalando dependências do user-service..."
-pip install -r "$BASE_DIR/user-service/requirements.txt" --break-system-packages
+(cd services/user-service && API_PORT=8000 python3 main.py) &
+(cd services/event-service && API_PORT=8001 python3 main.py) &
+(cd services/product-service && API_PORT=8002 python3 main.py) &
+(cd services/ticket-service && API_PORT=8003 python3 main.py) &
+(cd services/order-service && API_PORT=8004 python3 main.py) &
+(cd services/reservation-service && API_PORT=8005 python3 main.py) &
 
-echo "🚀 Iniciando user-service na porta 8000..."
-python3 "$BASE_DIR/user-service/main.py" &
-
-# Aguarda 5 segundos para garantir que o serviço de usuário esteja ativo
-sleep 5
-
-# PRODUCT SERVICE
-echo "📦 Instalando dependências do product-service..."
-pip install -r "$BASE_DIR/product-service/requirements.txt" --break-system-packages
-
-echo "🚀 Iniciando product-service na porta 8001..."
-python3 "$BASE_DIR/product-service/main.py" &
-
-echo "✅ Todos os serviços foram iniciados!"
 wait

@@ -17,7 +17,11 @@ class TicketRepository(TicketRepositoryInterface):
         return Ticket.from_orm(ticket_model)
 
     def get_by_id(self, ticket_id: int) -> Optional[Ticket]:
-        ticket = self.db.query(TicketModel).filter(TicketModel.id == ticket_id).first()
+        ticket = (
+            self.db.query(TicketModel)
+            .filter(TicketModel.ticket_id == ticket_id)
+            .first()
+        )
         return Ticket.from_orm(ticket) if ticket else None
 
     def list_by_event(self, event_id: int) -> List[Ticket]:
@@ -26,12 +30,14 @@ class TicketRepository(TicketRepositoryInterface):
         )
         return [Ticket.from_orm(t) for t in tickets]
 
-    def update(self, ticket_id: int, ticket: Ticket) -> Optional[Ticket]:
+    def update(self, ticket_id: int, ticket: Ticket) -> Ticket:
         ticket_model = (
-            self.db.query(TicketModel).filter(TicketModel.id == ticket_id).first()
+            self.db.query(TicketModel)
+            .filter(TicketModel.ticket_id == ticket_id)
+            .first()
         )
         if not ticket_model:
-            return None
+            raise ValueError("Ticket not found")
         for field, value in ticket.dict(exclude_unset=True).items():
             setattr(ticket_model, field, value)
         self.db.commit()
@@ -39,7 +45,11 @@ class TicketRepository(TicketRepositoryInterface):
         return Ticket.from_orm(ticket_model)
 
     def delete(self, ticket_id: int) -> None:
-        ticket = self.db.query(TicketModel).filter(TicketModel.id == ticket_id).first()
+        ticket = (
+            self.db.query(TicketModel)
+            .filter(TicketModel.ticket_id == ticket_id)
+            .first()
+        )
         if ticket:
             self.db.delete(ticket)
             self.db.commit()

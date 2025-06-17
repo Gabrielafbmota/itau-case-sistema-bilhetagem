@@ -28,7 +28,9 @@ class ProductRepository(IProductsRepository):
 
     def update_product(self, product_id: int, product_data: ProductUpdate):
         product = (
-            self.db.query(ProductsModel).filter(ProductsModel.id == product_id).first()
+            self.db.query(ProductsModel)
+            .filter(ProductsModel.product_id == product_id)
+            .first()
         )
         if not product:
             raise HTTPException(status_code=404, detail="Produto não encontrado")
@@ -40,7 +42,9 @@ class ProductRepository(IProductsRepository):
 
     def delete_product(self, product_id: int):
         product = (
-            self.db.query(ProductsModel).filter(ProductsModel.id == product_id).first()
+            self.db.query(ProductsModel)
+            .filter(ProductsModel.product_id == product_id)
+            .first()
         )
         if not product:
             raise HTTPException(status_code=404, detail="Produto não encontrado")

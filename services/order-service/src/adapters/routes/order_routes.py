@@ -12,10 +12,11 @@ from src.application.use_cases.create_order_use_case import CreateOrderUseCase
 from src.application.use_cases.get_order_use_case import GetOrderUseCase
 from src.application.use_cases.list_orders_use_case import ListOrdersUseCase
 
-# Clients HTTP
 from src.application.clients.user_client import UserClient
 from src.application.clients.event_client import EventClient
 from src.application.clients.product_client import ProductClient
+from src.application.clients.reservation_client import ReservationClient
+from src.application.clients.ticket_service_client import TicketServiceClient
 
 from src.domain.entities.order_entity import Order
 
@@ -25,26 +26,29 @@ logger = get_logger(__name__)
 
 def get_service(db: Session = Depends(DatabaseSession().get_session)) -> OrderService:
     repository = OrderRepository(db)
-
-    user_client = UserClient()
-    event_client = EventClient()
-    product_client = ProductClient()
+    ticket_client = TicketServiceClient(logger)
+    user_client = UserClient(logger)
+    event_client = EventClient(logger)
+    product_client = ProductClient(logger)
 
     return OrderService(
-        create_uc=CreateOrderUseCase(
+        create_use_case=CreateOrderUseCase(
             repository,
             user_client=user_client,
             event_client=event_client,
             product_client=product_client,
+            ticket_client=ticket_client,
+            logger=logger,
         ),
-        get_uc=GetOrderUseCase(repository),
-        list_uc=ListOrdersUseCase(repository),
+        get_use_case=GetOrderUseCase(repository),
+        list_use_case=ListOrdersUseCase(repository),
         logger=logger,
+        reservation_client=ReservationClient(logger),
     )
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_order(
+async def create_order(
     payload: CreateOrderSchema, service: OrderService = Depends(get_service)
 ):
     # Validação de segurança – confere se total informado bate com a soma dos itens
@@ -60,7 +64,9 @@ def create_order(
 
     try:
         order = Order.from_schema(payload)
-        return service.create(order)
+        return await service.create(order)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logger.error(f"Erro ao criar pedido: {str(e)}")
         raise HTTPException(status_code=500, detail="Erro ao criar pedido")

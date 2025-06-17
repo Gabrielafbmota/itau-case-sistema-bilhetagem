@@ -26,11 +26,11 @@ def get_event_service(
 ) -> EventService:
     repository = EventRepository(db)
     return EventService(
-        create_uc=CreateEventUseCase(repository),
-        get_uc=GetEventUseCase(repository),
-        list_uc=ListEventsUseCase(repository),
-        update_uc=UpdateEventUseCase(repository),
-        delete_uc=DeleteEventUseCase(repository),
+        create_use_case=CreateEventUseCase(repository),
+        get_use_case=GetEventUseCase(repository),
+        list_use_case=ListEventsUseCase(repository),
+        update_use_case=UpdateEventUseCase(repository),
+        delete_use_case=DeleteEventUseCase(repository),
         logger=get_logger(),
     )
 

@@ -23,6 +23,12 @@ from src.application.services.ticket_service import TicketService
 from src.application.use_cases.generate_ticket_from_order_use_case import (
     GenerateTicketFromOrderUseCase,
 )
+from src.application.use_cases.increment_ticket_stock_use_case import (
+    IncrementTicketStockUseCase,
+)
+from src.application.use_cases.decrement_ticket_stock_use_case import (
+    DecrementTicketStockUseCase,
+)
 from fastapi.responses import FileResponse
 import os
 
@@ -33,11 +39,13 @@ def get_ticket_service(
 ) -> TicketService:
     repo = TicketRepository(db)
     return TicketService(
-        create_uc=CreateTicketUseCase(repo),
-        list_uc=ListTicketsByEventUseCase(repo),
-        get_uc=GetTicketUseCase(repo),
-        update_uc=UpdateTicketUseCase(repo),
-        delete_uc=DeleteTicketUseCase(repo),
+        create_use_case=CreateTicketUseCase(repo),
+        list_use_case=ListTicketsByEventUseCase(repo),
+        get_use_case=GetTicketUseCase(repo),
+        update_use_case=UpdateTicketUseCase(repo),
+        delete_use_case=DeleteTicketUseCase(repo),
+        increment_use_case=IncrementTicketStockUseCase(repo),
+        decrement_use_case=DecrementTicketStockUseCase(repo),
         logger=get_logger(),
     )
 
@@ -73,7 +81,6 @@ def delete_ticket(ticket_id: int, service: TicketService = Depends(get_ticket_se
     service.delete(ticket_id)
 
 
-# Nova rota para gerar ticket a partir do pedido
 @router.post(
     "/from-order",
     response_model=TicketResponseSchema,
@@ -84,7 +91,6 @@ def generate_ticket_from_order(payload: TicketFromOrderSchema):
     return use_case.execute(payload)
 
 
-# Nova rota para recuperar PDF do ticket
 @router.get("/{ticket_id}/pdf")
 def get_ticket_pdf(ticket_id: str):
     filepath = f"tickets/ticket_{ticket_id}.pdf"
@@ -93,3 +99,25 @@ def get_ticket_pdf(ticket_id: str):
     return FileResponse(
         path=filepath, media_type="application/pdf", filename=os.path.basename(filepath)
     )
+
+
+@router.post("/{ticket_id}/decrement")
+def decrement_ticket_quantity(
+    ticket_id: int, quantity: int, service: TicketService = Depends(get_ticket_service)
+):
+    try:
+        service.decrement_quantity(ticket_id, quantity)
+        return {"message": "Quantidade de ingresso decrementada com sucesso"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/{ticket_id}/increment")
+def increment_ticket_quantity(
+    ticket_id: int, quantity: int, service: TicketService = Depends(get_ticket_service)
+):
+    try:
+        service.increment_quantity(ticket_id, quantity)
+        return {"message": "Quantidade de ingresso incrementada com sucesso"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

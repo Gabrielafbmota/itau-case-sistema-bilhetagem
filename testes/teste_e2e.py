@@ -7,6 +7,7 @@ BASE_URLS = {
     "product": "http://localhost:8002",
     "ticket": "http://localhost:8003",
     "order": "http://localhost:8004",
+    "reservation": "http://localhost:8005",
 }
 
 
@@ -57,7 +58,7 @@ def criar_ticket(event_id):
     response = requests.post(
         f"{BASE_URLS['ticket']}/tickets",
         json={
-            "event_id": 1,
+            "event_id": event_id,
             "price": 200.0,
             "quantity_total": 100,
             "quantity_available": 100,
@@ -68,15 +69,24 @@ def criar_ticket(event_id):
     return response.json()["ticket_id"]
 
 
-def criar_pedido(user_id, ticket_id, product_id):
+def criar_reserva(user_id, ticket_id):
+    response = requests.post(
+        f"{BASE_URLS['reservation']}/reservations",
+        json={"user_id": user_id, "ticket_id": ticket_id, "quantity": 1},
+    )
+    response.raise_for_status()
+    return response.json()["reservation_id"]
+
+
+def criar_pedido(user_id, event_id, ticket_id, product_id):
     response = requests.post(
         f"{BASE_URLS['order']}/orders",
         json={
-            "user_id": 1,
-            "event_id": 1,
-            "items": [{"ticket_id": 2, "quantity": 1, "unit_price": 50.0}],
-            "products": [{"product_id": 1, "quantity": 1, "unit_price": 10.0}],
-            "total": 60.0,
+            "user_id": user_id,
+            "event_id": event_id,
+            "items": [{"ticket_id": ticket_id, "quantity": 1, "unit_price": 200.0}],
+            "products": [{"product_id": product_id, "quantity": 1, "unit_price": 10.0}],
+            "total": 210.0,
         },
     )
     response.raise_for_status()
@@ -93,10 +103,13 @@ if __name__ == "__main__":
     print("🎫 Criando ticket...")
     ticket_id = criar_ticket(event_id)
 
+    print("🪑 Criando reserva...")
+    reserva_id = criar_reserva(user_id, ticket_id)
+
     print("🛍️ Criando produto...")
     product_id = criar_produto()
 
     print("📦 Criando pedido...")
-    order_id = criar_pedido(user_id, ticket_id, product_id)
+    order_id = criar_pedido(user_id, event_id, ticket_id, product_id)
 
     print(f"\n✅ Pedido criado com sucesso! ID: {order_id}")

@@ -13,15 +13,18 @@ class EventDataSchema(BaseModel):
     event_id: int
     title: str
     date: datetime
+    location: str
 
 
 class ProductDataSchema(BaseModel):
     product_id: int
     name: str
     price: float
+    quantity: int
 
 
 class TicketFromOrderSchema(BaseModel):
+    ticket_id: int
     order_id: int
     user: UserDataSchema
     event: EventDataSchema
