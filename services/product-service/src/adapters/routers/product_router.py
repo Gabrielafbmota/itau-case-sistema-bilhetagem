@@ -7,8 +7,8 @@ from src.application.use_cases.list_products_use_case import ListProductUseCase
 from src.application.use_cases.create_product_use_case import CreateProductUseCase
 from src.application.use_cases.update_product_use_case import UpdateProductUseCase
 from src.application.use_cases.delete_product_use_case import DeleteProductUseCase
+from src.application.use_cases.list_product_by_id_use_case import ListProductByIdUseCase
 from src.domain.schemas.product_schema import ProductCreate, ProductUpdate
-from src.domain.schemas.user_schema import User
 from src.middlewares.auth import get_current_user, get_current_admin_user
 from src.core.logger import get_logger
 
@@ -24,11 +24,22 @@ def get_products_services(db: Session = Depends(DatabaseSession().get_session)):
         create_use_case=CreateProductUseCase(repo),
         update_use_case=UpdateProductUseCase(repo),
         delete_use_case=DeleteProductUseCase(repo),
+        list_product_by_id_use_case=ListProductByIdUseCase(repo),
         logger=logger,
     )
 
 
-@products_router.get("/", dependencies=[Depends(get_current_user)])
+@products_router.get("/{product_id}")
+def get_product(
+    product_id: int, service: ProductsService = Depends(get_products_services)
+):
+    try:
+        return service.list_product_by_id(product_id)
+    except HTTPException as e:
+        raise e
+
+
+@products_router.get("/")
 def get_products(service: ProductsService = Depends(get_products_services)):
     try:
         return service.list_products()
@@ -42,7 +53,6 @@ def get_products(service: ProductsService = Depends(get_products_services)):
 @products_router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(get_current_admin_user)],
 )
 def create_product(
     product: ProductCreate, service: ProductsService = Depends(get_products_services)
@@ -72,7 +82,6 @@ def update_product(
 @products_router.delete(
     "/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(get_current_admin_user)],
 )
 def delete_product(id: int, service: ProductsService = Depends(get_products_services)):
     try:

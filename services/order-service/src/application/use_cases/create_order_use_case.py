@@ -24,8 +24,9 @@ class CreateOrderUseCase:
         event_data = self.event_client.get_event(order.event_id)
 
         product_details = []
-        for pid in order.product_ids:
-            product = self.product_client.get_product(pid)
+        for products in order.products:
+
+            product = self.product_client.get_product(products.product_id)
             product_details.append(product)
 
         # (opcional) você pode atribuir esses dados ao order para uso posterior

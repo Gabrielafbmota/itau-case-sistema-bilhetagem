@@ -16,6 +16,7 @@ class OrderProductSchema(BaseModel):
 
 class CreateOrderSchema(BaseModel):
     user_id: int
+    event_id: int  # <-- ESSENCIAL
     items: List[OrderItemSchema]
     products: Optional[List[OrderProductSchema]] = []
     total: float

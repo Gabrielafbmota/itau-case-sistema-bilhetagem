@@ -14,14 +14,13 @@ class OrderRepository(OrderRepositoryInterface):
         self.db = db
 
     def create(self, order: Order) -> Order:
-        db_order = OrderModel(user_id=order.user_id, total=order.total)
+        db_order = OrderModel(user_id=order.user_id, total=order.total_price)
         self.db.add(db_order)
-        self.db.flush()  # Garante que o ID seja atribuído
-
+        self.db.flush()
         # Adiciona os tickets (itens)
         for item in order.items:
             db_item = OrderItemModel(
-                order_id=db_order.id,
+                order_id=db_order.order_id,
                 ticket_id=item.ticket_id,
                 quantity=item.quantity,
                 unit_price=item.unit_price,
@@ -31,7 +30,7 @@ class OrderRepository(OrderRepositoryInterface):
         # Adiciona os produtos adicionais
         for product in order.products:
             db_product = OrderProductModel(
-                order_id=db_order.id,
+                order_id=db_order.order_id,
                 product_id=product.product_id,
                 quantity=product.quantity,
                 unit_price=product.unit_price,
@@ -43,7 +42,7 @@ class OrderRepository(OrderRepositoryInterface):
         return db_order
 
     def get_by_id(self, order_id: int) -> Optional[OrderModel]:
-        return self.db.query(OrderModel).filter(OrderModel.id == order_id).first()
+        return self.db.query(OrderModel).filter(OrderModel.order_id == order_id).first()
 
     def list_all(self) -> List[OrderModel]:
         return self.db.query(OrderModel).all()

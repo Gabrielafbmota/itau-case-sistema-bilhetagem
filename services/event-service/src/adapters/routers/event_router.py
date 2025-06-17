@@ -4,7 +4,11 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from src.core.logger import get_logger
-from src.domain.schemas.event_schema import CreateEventSchema, UpdateEventSchema
+from src.domain.schemas.event_schema import (
+    CreateEventSchema,
+    UpdateEventSchema,
+    EventResponseSchema,
+)
 from src.domain.entities.event_entity import Event
 from src.infrastructure.repositories.event_repository import EventRepository
 from src.application.use_cases.create_event_use_case import CreateEventUseCase
@@ -31,25 +35,35 @@ def get_event_service(
     )
 
 
-@router.post("/", response_model=Event, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=EventResponseSchema, status_code=status.HTTP_201_CREATED
+)
 def create_event(
     event_data: CreateEventSchema, service: EventService = Depends(get_event_service)
 ):
-    event = Event(**event_data.dict())
+    event = Event(
+        title=event_data.title,
+        description=event_data.description,
+        location=event_data.location,
+        start_time=event_data.start_time,
+        end_time=event_data.end_time,
+        created_by=event_data.created_by,
+    )
+
     return service.create(event)
 
 
-@router.get("/", response_model=List[Event])
+@router.get("/", response_model=List[EventResponseSchema])
 def list_events(service: EventService = Depends(get_event_service)):
     return service.list()
 
 
-@router.get("/{event_id}", response_model=Event)
+@router.get("/{event_id}", response_model=EventResponseSchema)
 def get_event(event_id: int, service: EventService = Depends(get_event_service)):
     return service.get(event_id)
 
 
-@router.put("/{event_id}", response_model=Event)
+@router.put("/{event_id}", response_model=EventResponseSchema)
 def update_event(
     event_id: int,
     event_data: UpdateEventSchema,
