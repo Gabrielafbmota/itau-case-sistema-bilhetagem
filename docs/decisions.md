@@ -1,4 +1,3 @@
-
 # 📝 Decisions - Sistema de Bilhetagem (Case Técnico Itaú)
 
 Este documento descreve as principais decisões técnicas e de arquitetura adotadas no projeto, com foco em atender aos requisitos do desafio e aos pilares do **AWS Well-Architected Framework**.
