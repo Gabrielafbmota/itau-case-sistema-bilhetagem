@@ -11,4 +11,6 @@ alembic
 pytest
 pytest-env
 pytest-cov
-fpdf
+fpdf2
+qrcode
+apscheduler
