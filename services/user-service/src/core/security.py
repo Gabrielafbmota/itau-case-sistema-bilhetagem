@@ -13,7 +13,13 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(data: dict, expires_delta) -> str:
+    """Gera token JWT com tempo de expiração."""
+
     to_encode = data.copy()
+    if expires_delta:
+        expire = time.time() + expires_delta.total_seconds()
+        to_encode.update({"expires": expire})
+
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
