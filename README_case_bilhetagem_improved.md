@@ -1,0 +1,122 @@
+
+# 🎟️ Sistema de Bilhetagem - Case Técnico Itaú
+
+Este projeto apresenta uma arquitetura em **microserviços**, com **arquitetura hexagonal** para cada serviço, utilizando uma stack moderna e práticas de engenharia orientadas ao **AWS Well-Architected Framework**.
+
+A solução foi desenvolvida como entrega para o **case técnico Itaú - vaga Engenheiro(a) de Software Sênior**.
+
+---
+
+## 🌟 Arquitetura Geral
+
+A arquitetura foi pensada para garantir:
+
+✅ Separação clara de domínios (DDD)  
+✅ Alta disponibilidade (Multi-AZ)  
+✅ Desacoplamento entre componentes (SQS)  
+✅ Escalabilidade horizontal (ECS Fargate)  
+✅ Observabilidade (CloudWatch, X-Ray)  
+✅ Segurança (WAF, API Gateway, Cognito, IAM, Secrets Manager)  
+✅ Performance e otimização de custos (uso intensivo de serviços gerenciados)  
+
+### Principais componentes:
+
+- **AWS WAF** → proteção contra ataques comuns
+- **API Gateway** → gestão de APIs REST
+- **Amazon Cognito** → autenticação OAuth2 + JWT
+- **ECS Fargate** → execução de containers em subnets privadas
+- **RDS PostgreSQL (Multi-AZ)** → banco relacional transacional
+- **Amazon SQS** → mensageria para orquestração entre serviços
+- **Amazon S3** → armazenamento de ingressos em PDF
+- **CloudWatch + X-Ray + IAM + Secrets Manager** → observabilidade e segurança
+
+### Topologia de rede:
+
+- Subnets públicas: WAF, API Gateway, Cognito  
+- Subnets privadas: ECS tasks e RDS  
+- Múltiplas zonas de disponibilidade (AZs)
+
+---
+
+## 🧱 Serviços
+
+Todos os serviços seguem **Clean Architecture**, **SOLID** e **12 Factors**, com:
+
+- Domínio isolado da infraestrutura
+- Validações e segurança OWASP
+- Integração por REST e mensageria (SQS)
+- APIs documentadas em OpenAPI (Swagger)
+
+### Microservices:
+
+- **user-service**: CRUD de usuários
+- **event-service**: CRUD de eventos
+- **product-service**: Produtos complementares (pipoca, chocolate...)
+- **ticket-service**: Controle de ingressos e geração de PDF
+- **reservation-service**: Reservas com expiração automática (scheduler)
+- **order-service**: Finalização de pedidos e confirmação de reservas
+- **payment-service**: Processamento de pagamentos (simulado)
+
+---
+
+## 🗺️ Fluxo de Compra
+
+1️⃣ Usuário e evento são cadastrados  
+2️⃣ Tickets são cadastrados para o evento  
+3️⃣ Reserva de ingressos é feita (temporária, com expiração)  
+4️⃣ Produtos complementares podem ser adicionados ao pedido  
+5️⃣ Pedido é finalizado:
+   - Ordem é criada
+   - Reserva é confirmada
+   - Pagamento é processado (mock)
+   - Ticket em PDF é gerado e armazenado em S3
+
+---
+
+## ⚙️ Como rodar o projeto
+
+### Localmente (SQLite ou PostgreSQL via Docker)
+
+```bash
+# Instalar dependências
+make prepare
+
+# Rodar com banco SQLite (rápido para testes)
+make run_local
+
+# Rodar com PostgreSQL (via Docker Compose)
+docker-compose up --build
+```
+
+### Produção (AWS Fargate + RDS Multi-AZ)
+
+```bash
+# Build e push das imagens
+make build
+make push
+
+# Deploy para ECS (via GitHub Actions ou scripts)
+bash scripts/deploy.sh
+```
+
+---
+
+## 📋 Boas práticas adotadas
+
+- **AWS Well-Architected Framework** (segurança, confiabilidade, performance, eficiência de custos, excelência operacional)
+- Clean Architecture + SOLID + 12 Factors
+- OWASP Top 10 — proteção contra vulnerabilidades
+- Logging e tracing distribuído com CloudWatch e X-Ray
+- Orquestração desacoplada com SQS
+- Gestão segura de segredos com AWS Secrets Manager
+- Uso de múltiplas AZs e serviços gerenciados para alta disponibilidade
+
+---
+
+## 📝 Documentação complementar
+
+- [Decisions.md](docs/decidions.md) — decisões técnicas detalhadas
+- Arquitetura visual: `Arquitetura Bilhetagem.drawio` (disponível para edição em diagrams.net)
+
+---
+
