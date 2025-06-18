@@ -74,6 +74,8 @@ src/
 - Os serviços são independentes e expostos por porta distinta.
 - Para ambientes reais, recomenda-se o uso de **Docker** + **Traefik** ou **NGINX**.
 
+Para uma visão geral completa da arquitetura e das rotas disponíveis, consulte o arquivo [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md).
+
 ---
 
 Desenvolvido com 💙 por Gabi
