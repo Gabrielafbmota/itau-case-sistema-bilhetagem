@@ -1,13 +1,13 @@
 #!/bin/bash
 
+# Services
+SERVICES=(user-service product-service event-service ticket-service reservation-service order-service)
 
-echo "🚀 Iniciando todos os serviços com python main.py..."
+echo "👉 Iniciando serviços..."
+for service in "${SERVICES[@]}"; do
+    echo "🔹 Iniciando $service"
+    (cd services/$service && uvicorn src.main:app --host 0.0.0.0 --port $(grep API_PORT .env | cut -d '=' -f2) &)
+    sleep 2
+done
 
-(cd services/user-service && API_PORT=8000 python3 main.py) &
-(cd services/event-service && API_PORT=8001 python3 main.py) &
-(cd services/product-service && API_PORT=8002 python3 main.py) &
-(cd services/ticket-service && API_PORT=8003 python3 main.py) &
-(cd services/order-service && API_PORT=8004 python3 main.py) &
-(cd services/reservation-service && API_PORT=8005 python3 main.py) &
-
-wait
+echo "✅ Todos os serviços foram iniciados."

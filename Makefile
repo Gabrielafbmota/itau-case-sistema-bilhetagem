@@ -1,9 +1,14 @@
-.PHONY: up_db up_services start
+.PHONY: prepare reset_database start_services start
 
-up_db:
-	cd scripts && bash start_db.sh
+prepare:
+	bash scripts/prepare.sh
 
-up_services:
+reset_database:
+	cd scripts && bash reset_database.sh
+
+start_services:
 	bash scripts/start_services.sh
 
-start: up_db up_services
+start:
+	make reset_database && make start_services
+
