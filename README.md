@@ -6,7 +6,7 @@ A solução foi desenvolvida como entrega para o **case técnico Itaú - vaga En
 
 ## 🌟 Arquitetura Geral
 
-![arquitetura de software](docs/images/arquitetura-bilhetagem.png)
+![arquitetura de software](docs/images/Arquitetura.png)
 
 A arquitetura foi pensada para garantir:
 
